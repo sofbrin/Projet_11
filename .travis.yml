@@ -1,0 +1,25 @@
+language: python
+python:
+  - '3.6'
+
+addons:
+  chrome: stable
+  firefox: latest
+
+# safelist
+branches:
+  only:
+    - staging
+
+before_script:
+  - install-webdrivers
+
+env:
+  global:
+    - DJANGO_SETTINGS_MODULE="settings.travis"
+
+services:
+  - postgresql
+
+script:
+  - python manage.py test -v2

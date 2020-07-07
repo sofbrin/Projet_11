@@ -57,45 +57,44 @@
         </div>
       </div>
 
-      <div class="container">
+
         <div class="container-account text-center">
           <a href="{{ product_url }}"><h3><b>Voir la fiche sur le site d'Open Food Facts</b></h3></a>
           <br>
+          <br>
         </div>
-      </div>
+
 
       <!-- Comments zone -->
-      <div class="container-substitute">
-        <h4>Le produit {{ product_title_page }} a {{ comments.count }} commentaires</h4>
+      <div class="container-comments">
+        <h4>Le produit {{ product_title_page }} a {{ existing_comments.count }} commentaire(s)</h4>
+        <br>
+        {% if not user.is_authenticated %}
+          <h4>Vous devez être connecté pour laisser un commentaire</h4>
+          <br>
+        {% endif %}
 
-        {% for comment in comments %}
-        <div class="container-comments">
-          <p class="font-weight-bold">
-            {{ comment.date }}
-            <span class="text-muted font-weight-normal">
-              {{ comment.author}}
-            </span>
-          </p>
-          {{ comment.text | linebreaks }}
-        </div>
-        {% endfor %}
-      </div>
+        {% for comment in product.comments.all %}
+          <div class="container-comments">
+            <div class="date">{{ comment.date }}</div>
+            <strong>{{ comment.author }}</strong>
+            <p>{{ comment.text|linebreaks }}</p>
+          </div>
+        {% endfor%}
 
-      <div class="col-md-8 card mb-4 mt-3">
-         <div class="card-body">
+        {% if user.is_authenticated %}
            {% if new_comment %}
            <div class="alert-success" role="alert">
              Votre commentaire est en attente de modération
            </div>
            {% else %}
-           <h4>Laissez un commentaire</h4>
            <form method="POST">
-             {{ comment_form.as_p }}
              {% csrf_token %}
-             <button type="submit" class="btn btn-primary btn-lg">Validez</button>
+             <p>{{ form.text }}</p>
+             <button class="btn" id="logforms" type="submit">Valider</button>
            </form>
            {% endif %}
-         </div>
+        {% endif %}
       </div>
     </div>
   </section>

@@ -311,6 +311,9 @@ header.substitutehead h1 {
   border-radius: 5px;
   padding: 5px;
 }
+.container-comments h4 {
+  color: rgba(46, 39, 49);
+}
 
 /* SEARCH BAR, FORMS & BUTTONS */
 .searchbar2 {

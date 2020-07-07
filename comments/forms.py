@@ -13,6 +13,16 @@ class DivErrorList(ErrorList):
 
 
 class CommentsForm(forms.ModelForm):
+    text = forms.CharField(widget=forms.Textarea(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Ajouter un commentaire'
+        }
+    ))
+
     class Meta:
         model = CommentsDb
-        fields = ('text')
+        fields = ('text',)
+
+    def clean_text(self):
+        pass

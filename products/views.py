@@ -10,7 +10,9 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
-from products.models import ProductDb, UserPersonalDb
+from .models import ProductDb, UserPersonalDb
+from comments.models import CommentsDb
+from comments.forms import CommentsForm, DivErrorList
 
 
 def autocompleteModel(request):
@@ -145,6 +147,19 @@ def my_substitutes(request):
 def detail(request, product_id):
     """ Rendering a product's details """
     product = ProductDb.objects.get(pk=product_id)
+    existing_comments = product.comments.filter(approved_comment=True)
+    new_comment = None
+
+    if request.method == 'POST':
+        form = CommentsForm(request.POST, error_class=DivErrorList)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.product = product
+            new_comment.save()
+
+    else:
+        form = CommentsForm()
+
     context = {
         'product_id': product.id,
         'product_title_page': product.name,
@@ -155,8 +170,34 @@ def detail(request, product_id):
         'product_sugar': product.sugar,
         'product_salt': product.salt,
         'product_url': product.url,
+        'existing_comments': existing_comments,
+        'new_comment': new_comment,
+        'form': form,
     }
     return render(request, 'products/product.html', context)
+
+
+"""def add_comment_to_product(request, product_id):
+    product = ProductDb.objects.get(pk=product_id)
+    existing_comments = product.comments.filter(approved_comment=True)
+    new_comment = None
+
+    if request.method == 'POST':
+        print(new_comment, '1')
+        comment_form = CommentsForm(request.POST, error_class=DivErrorList)
+        print(new_comment, '2')
+        if comment_form.is_valid():
+            print(comment_form, '3')
+            new_comment = comment_form.save(commit=False)
+            new_comment.product = product
+            new_comment.save()
+    else:
+        comment_form = CommentsForm()
+    
+    return render(request, 'products/product.html', {'product': product,
+                                                     'existing_comments': existing_comments,
+                                                     'new_comment': new_comment,
+                                                     'comment_form': comment_form})"""
 
 
 def legal_notice(request):

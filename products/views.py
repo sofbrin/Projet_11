@@ -1,7 +1,7 @@
 import json
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.template import loader
@@ -148,7 +148,7 @@ def detail(request, product_id):
     """ Rendering a product's details """
     product = ProductDb.objects.get(pk=product_id)
     existing_comments = product.comments.filter(approved_comment=True)
-    new_comment = None
+    """new_comment = None
 
     if request.method == 'POST':
         form = CommentsForm(request.POST, error_class=DivErrorList)
@@ -158,7 +158,7 @@ def detail(request, product_id):
             new_comment.save()
 
     else:
-        form = CommentsForm()
+        form = CommentsForm()"""
 
     context = {
         'product_id': product.id,
@@ -171,33 +171,41 @@ def detail(request, product_id):
         'product_salt': product.salt,
         'product_url': product.url,
         'existing_comments': existing_comments,
-        'new_comment': new_comment,
-        'form': form,
+        #'new_comment': new_comment,
+        #'form': form,
     }
     return render(request, 'products/product.html', context)
 
 
-"""def add_comment_to_product(request, product_id):
-    product = ProductDb.objects.get(pk=product_id)
-    existing_comments = product.comments.filter(approved_comment=True)
-    new_comment = None
+def add_comment(request, pk):
+    product = ProductDb.objects.get(pk=pk)
+    #new_comment = None
 
     if request.method == 'POST':
-        print(new_comment, '1')
-        comment_form = CommentsForm(request.POST, error_class=DivErrorList)
-        print(new_comment, '2')
-        if comment_form.is_valid():
-            print(comment_form, '3')
-            new_comment = comment_form.save(commit=False)
+        form = CommentsForm(request.POST, error_class=DivErrorList)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
             new_comment.product = product
             new_comment.save()
+            return redirect('product', pk=product.pk)
     else:
-        comment_form = CommentsForm()
+        form = CommentsForm()
     
-    return render(request, 'products/product.html', {'product': product,
-                                                     'existing_comments': existing_comments,
-                                                     'new_comment': new_comment,
-                                                     'comment_form': comment_form})"""
+    return render(request, 'comments/add_comment.html', {'form': form, 'product': product})
+
+
+@login_required
+def comment_approve(request, pk):
+    comment = get_object_or_404(CommentsDb, pk=pk)
+    comment.approve()
+    return redirect('product', pk=comment.product.pk)
+
+
+@login_required
+def comment_remove(request, pk):
+    comment = get_object_or_404(CommentsDb, pk=pk)
+    comment.remove()
+    return redirect('product', pk=comment.product.pk)
 
 
 def legal_notice(request):

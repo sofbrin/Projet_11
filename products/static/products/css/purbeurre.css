@@ -288,7 +288,6 @@ header.substitutehead h1 {
   min-height: 100%;
   height: auto;
   padding: 100px 0 0;
-
 }
 .container-substitute {
   background: #E8A75D;
@@ -302,14 +301,14 @@ header.substitutehead h1 {
   min-height: 100%;
   height: auto;
   padding: 100px 0 0;
- }
+}
 .container-comments {
   background: #E8A75D;
   font-size: 1rem;
   color: #C45525;
   border: 5px solid rgba(46, 39, 49);
   border-radius: 5px;
-  padding: 5px;
+
 }
 .container-comments h4 {
   color: rgba(46, 39, 49);

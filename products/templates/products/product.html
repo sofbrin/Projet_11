@@ -71,15 +71,15 @@
           <h4>Vous devez être connecté pour laisser un commentaire</h4>
           <br>
         {% elif user.is_authenticated or comment.approved_comment %}
-          <a class="btn btn-default" href="{% url 'add_comment' pk=product.pk %}">Ajoutez un commentaire</a>
+          <a class="btn btn-default" href="{% url 'add_comment' product_id %}">Ajoutez un commentaire</a>
           {% for comment in product.comments.all %}
             <div class="container-comments">
               <div class="date">
                 {{ comment.date }}>
-                {% if not comment.approved_comment %}
-                  <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.id %}"><span class="glyphicon glyphicon-remove"></span></a>
+                <!--{% if not comment.approved_comment %}
+                  <a class="btn btn-default" href="{% url 'comment_remove' product %}"><span class="glyphicon glyphicon-remove"></span></a>
                   <a class="btn btn-default" href="{% url 'comment-approve' pk=comment.id %}"><span class="glyphicon glyphicon-ok"></span></a>
-                {% endif %}
+                {% endif %}-->
               </div>
               <strong>{{ comment.author }}</strong>
               <p>{{ comment.text|linebreaks }}</p>

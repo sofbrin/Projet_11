@@ -177,8 +177,9 @@ def detail(request, product_id):
     return render(request, 'products/product.html', context)
 
 
-def add_comment(request, pk):
-    product = ProductDb.objects.get(pk=pk)
+@login_required
+def add_comment(request, comment_id):
+    product = ProductDb.objects.get(pk=comment_id)
     #new_comment = None
 
     if request.method == 'POST':
@@ -186,6 +187,7 @@ def add_comment(request, pk):
         if form.is_valid():
             new_comment = form.save(commit=False)
             new_comment.product = product
+            new_comment.user = request.user
             new_comment.save()
             return redirect('product', pk=product.pk)
     else:

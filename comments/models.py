@@ -12,7 +12,7 @@ class CommentsManager(models.Manager):
 
 class CommentsDb(models.Model):
     text = models.TextField()
-    date = models.DateTimeField(default=timezone.now)
+    date = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(ProductDb, on_delete=models.CASCADE, related_name='comments')
     approved_comment = models.BooleanField(default=False)

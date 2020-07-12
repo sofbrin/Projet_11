@@ -23,6 +23,3 @@ class CommentsForm(forms.ModelForm):
     class Meta:
         model = CommentsDb
         fields = ('text',)
-
-    def clean_text(self):
-        pass

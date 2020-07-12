@@ -6,8 +6,8 @@ from products.models import ProductDb
 
 
 class CommentsManager(models.Manager):
-    def approve(self, query):
-        query.update(approved_comment=True)
+    """def approve(self, query):
+        query.update(approved_comment=True)"""
 
 
 class CommentsDb(models.Model):
@@ -23,4 +23,4 @@ class CommentsDb(models.Model):
         self.save()"""
 
     def __str__(self):
-        return self.text
+        return f'{self.author} : {self.text}'

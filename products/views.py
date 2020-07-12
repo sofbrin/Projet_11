@@ -145,20 +145,8 @@ def my_substitutes(request):
 
 
 def detail(request, product_id):
-    """ Rendering a product's details """
-    product = ProductDb.objects.get(pk=product_id)
-    existing_comments = product.comments.filter(approved_comment=True)
-    """new_comment = None
-
-    if request.method == 'POST':
-        form = CommentsForm(request.POST, error_class=DivErrorList)
-        if form.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.product = product
-            new_comment.save()
-
-    else:
-        form = CommentsForm()"""
+    product = get_object_or_404(ProductDb, pk=product_id)
+    approved_comments = product.comments.filter(approved_comment=True)
 
     context = {
         'product_id': product.id,
@@ -169,6 +157,43 @@ def detail(request, product_id):
         'product_saturated_fat': product.saturated_fat,
         'product_sugar': product.sugar,
         'product_salt': product.salt,
+        'product_url': product.url,
+        'approved_comments': approved_comments
+    }
+
+    return render(request, 'products/product.html', context)
+
+
+def add_comment(request, product_id):
+    product = get_object_or_404(ProductDb, pk=product_id)
+    new_comment = None
+
+    if request.method == 'POST':
+        form = CommentsForm(request.POST, error_class=DivErrorList)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.product = product
+            new_comment.user = request.user
+            new_comment.save()
+            return redirect('product', pk=product.pk)
+    else:
+        form = CommentsForm()
+
+    return render(request, 'products/product.html', {'product': product,
+                                                     'new_comment': new_comment,
+                                                     'form': form})
+
+
+"""def detail(request, product_id):
+   
+    product = ProductDb.objects.get(pk=product_id)
+    existing_comments = product.comments.filter(approved_comment=True)
+
+    context = {
+        'product_id': product.id,
+        'product_title_page': product.name,
+        'product_image': product.image,
+        'product_nutriscore': product.nutriscore,
         'product_url': product.url,
         'existing_comments': existing_comments,
         #'new_comment': new_comment,
@@ -207,7 +232,7 @@ def comment_approve(request, pk):
 def comment_remove(request, pk):
     comment = get_object_or_404(CommentsDb, pk=pk)
     comment.remove()
-    return redirect('product', pk=comment.product.pk)
+    return redirect('product', pk=comment.product.pk)"""
 
 
 def legal_notice(request):

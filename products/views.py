@@ -158,15 +158,18 @@ def detail(request, product_id):
         'product_sugar': product.sugar,
         'product_salt': product.salt,
         'product_url': product.url,
-        'approved_comments': approved_comments
+        'approved_comments': approved_comments,
     }
 
     return render(request, 'products/product.html', context)
 
 
 def add_comment(request, product_id):
+    print(product_id)
     product = get_object_or_404(ProductDb, pk=product_id)
+    print(product)
     new_comment = None
+    print(new_comment)
 
     if request.method == 'POST':
         form = CommentsForm(request.POST, error_class=DivErrorList)
@@ -175,11 +178,12 @@ def add_comment(request, product_id):
             new_comment.product = product
             new_comment.user = request.user
             new_comment.save()
-            return redirect('product', pk=product.pk)
+            return HttpResponseRedirect(reverse('product'))
+            #return redirect('product', pk=product.pk)
     else:
         form = CommentsForm()
 
-    return render(request, 'products/product.html', {'product': product,
+    return render(request, 'products/product.html', {'product_id': product.id,
                                                      'new_comment': new_comment,
                                                      'form': form})
 

@@ -73,11 +73,11 @@ def activate(request, uidb64, token):
         return HttpResponse("L'email n'est pas valide.")
 
 
-    """user = authenticate(request, email=email, password=password)
-    if user is not None:
-        login(request, user)
-        messages.success(request, 'Votre compte a été créé', extra_tags='toaster')
-        return HttpResponseRedirect(reverse('home'))"""
+    #user = authenticate(request, email=email, password=password)
+    #if user is not None:
+        #login(request, user)
+        #messages.success(request, 'Votre compte a été créé', extra_tags='toaster')
+        #return HttpResponseRedirect(reverse('home'))
 
 
 def login_view(request):

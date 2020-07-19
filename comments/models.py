@@ -18,9 +18,5 @@ class CommentsDb(models.Model):
     approved_comment = models.BooleanField(default=False)
     objects = CommentsManager()
 
-    """def approve(self):
-        self.approved_comment = True
-        self.save()"""
-
     def __str__(self):
         return f'{self.author} : {self.text}'

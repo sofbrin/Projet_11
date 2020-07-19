@@ -16,7 +16,8 @@ class CommentsForm(forms.ModelForm):
     text = forms.CharField(widget=forms.Textarea(
         attrs={
             'class': 'form-control',
-            'placeholder': 'Ajouter un commentaire'
+            'placeholder': '...',
+            'rows': 3
         }
     ))
 

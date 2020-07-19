@@ -64,32 +64,37 @@
       </div>
 
       <!-- Comments zone -->
-      <h5><strong>COMMENTAIRES</strong> : Le produit {{ product_title_page }} a {{ approved_comments.count }} commentaire(s).</h5>
+      <br>
+      <h5><strong>COMMENTAIRES</strong> : Le produit {{ product_title_page }} a <strong>{{ approved_comments.count }}</strong> commentaire(s).</h5>
+
       {% if not user.is_authenticated %}
-      <p><strong><em>Vous devez être connecté pour laisser un commentaire.</em></strong></p>
+      <h5><strong><em>Vous devez être connecté pour laisser un commentaire.</em></strong></h5>
+      <br>
       {% endif %}
 
       {% if approved_comments %}
         {% for  comment in approved_comments %}
           <div class="container-comments">
-            <p><strong>{{ comment.author.first_name }} le {{ comment.date }}</strong>
+            <strong>{{ comment.author.first_name }} le {{ comment.date }}</strong>
               : {{ comment.text }}
-            </p>
           </div>
+          <br>
         {% endfor %}
       {% endif %}
 
       {% if user.is_authenticated %}
         {% if new_comment %}
-          <p>Votre commentaire est en attente de modération</p>
-        {% else %}
+          <h5><strong><em>Votre commentaire est en attente de modération</em></strong></h5>
+          <br>
+      {% else %}
           <h5><strong>Laisser un commentaire</strong></h5>
           <form method="post">
-            <label for="comment">Laissez un commentaire</label><br>
             {% csrf_token %}
-            <input type="text" id="comment" name="comment"><br>
+            {{ form.text }}
+            <br>
             <button class="btn" id="logforms" type="submit">Valider</button>
           </form>
+          <br>
         {% endif %}
       {% endif %}
 
@@ -97,31 +102,3 @@
   </section>
 
 {% endblock %}
-      <!--<div class="container-comments">
-
-       {% include 'products/add_comment.html' %}
-
-
-        <h4>Le produit {{ product_title_page }} a {{ existing_comments.count }} commentaire(s)</h4>
-        <br>
-        {% if not user.is_authenticated %}
-          <h4>Vous devez être connecté pour laisser un commentaire</h4>
-          <br>
-        {% elif user.is_authenticated or comment.approved_comment %}
-
-          {% for comment in product.comments.all %}
-            <div class="container-comments">
-              <div class="date">
-                {{ comment.date }}>
-              </div>
-              <strong>{{ comment.author }}</strong>
-              <p>{{ comment.text|linebreaks }}</p>
-            </div>
-          {% empty %}
-          <p>Soyez le premier à commenter ce produit.</p>
-          {% endfor %}
-        {% endif %}
-      </div>-->
-
-
-

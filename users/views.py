@@ -17,23 +17,6 @@ from django.contrib.auth import authenticate, login, logout
 
 def register_view(request):
     """ Rendering the registration form """
-    """if request.method == 'POST':
-        form = RegistrationForm(request.POST, error_class=DivErrorList)
-        if form.is_valid():
-            email = form.clean_email()
-            password = form.clean_password2()
-            form.save()
-            #user = form.save()
-            #send_mail(email, f'Veuillez confirmer l\'email: {user.confirmation_key}', )
-            user = authenticate(request, email=email, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, 'Votre compte a été créé', extra_tags='toaster')
-                return HttpResponseRedirect(reverse('home'))
-    else:
-        form = RegistrationForm()
-    return render(request, 'users/signup.html', {'form': form})"""
-
     if request.method == 'POST':
         form = RegistrationForm(request.POST, error_class=DivErrorList)
         if form.is_valid():
@@ -52,7 +35,9 @@ def register_view(request):
             })
             to_email = EmailMessage(mail_subject, message, to=[email])
             to_email.send()
-            return HttpResponse("Merci de confirmer votre email pour finaliser l'ouverture de compte")
+            messages.info(request, "Vous avez reçu un email pour finaliser l'inscription.", extra_tags='toaster')
+            return HttpResponseRedirect(reverse('signup'))
+
     else:
         form = RegistrationForm()
     return render(request, 'users/signup.html', {'form': form})
@@ -68,16 +53,11 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
         login(request, user)
-        return HttpResponse('Merci. Vous pouvez maintenant vous connecter à votre compte.')
+        messages.success(request, 'Vous êtes connecté.', extra_tags='toaster')
+        return HttpResponseRedirect(reverse('home'))
     else:
-        return HttpResponse("L'email n'est pas valide.")
-
-
-    #user = authenticate(request, email=email, password=password)
-    #if user is not None:
-        #login(request, user)
-        #messages.success(request, 'Votre compte a été créé', extra_tags='toaster')
-        #return HttpResponseRedirect(reverse('home'))
+        messages.error(request, "L'email n'est pas valide.", extra_tags='toaster')
+        return HttpResponseRedirect(reverse('signup'))
 
 
 def login_view(request):

@@ -14,6 +14,15 @@
   <!-- email Section -->
   <section class="container-account">
     <div class="container">
+
+      <div class="font-weight-bold">
+        {% if messages %}
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+
       <form method="POST">
         {% csrf_token %}
         {{ form.non_field_errors }}

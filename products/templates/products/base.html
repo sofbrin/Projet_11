@@ -55,7 +55,7 @@
   <script>
     {% for message in messages %}
       {% if message.extra_tags == 'toaster' %}
-        toastr.{{ message.level_tag }}('{{ message }}', {timeOut:10000})
+        toastr.{{ message.level_tag }}('{{ message }}', {timeOut:15000})
       {% endif %}
     {% endfor %}
   </script>

@@ -45,9 +45,6 @@ def results(request):
         query = request.GET.get('query', '')
         page_number = request.GET.get('page', 1)
 
-    """elif request.method == 'POST':
-        query = request.POST.get('query', '')"""
-
     if query == '':
         messages.error(request, 'Vous n\'avez saisi aucun produit', extra_tags='toaster')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -93,11 +90,7 @@ def save_in_db(request):
         body = json.loads(request.body)
     else:
         body = request.POST
-    """try:
-        body = json.loads(request.body)
-    except json.decoder.JSONDecodeError:
-        body = request.body
-        print(body)"""
+
     product_id = body['product_id']
     substitute_id = body['substitute_id']
 

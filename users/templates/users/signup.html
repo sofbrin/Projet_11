@@ -23,22 +23,24 @@
         {% endif %}
       </div>
 
-      <form method="POST">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        {{ form.first_name }}
-        <br>
-        {{ form.last_name }}
-        <br>
-        {{ form.email }}
-        <p class="formerrors">{{ form.email.errors | safe }}</p>
-        {{ form.password1 }}
-        <br>
-        {{ form.password2 }}
-        <p class="formerrors">{{ form.password2.errors | safe }}</p>
+      <div class="font-weight-bold">
+        <form method="POST">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          {{ form.first_name }}
+          <br>
+          {{ form.last_name }}
+          <br>
+          {{ form.email }}
+          <p class="formerrors">{{ form.email.errors | safe }}</p>
+          {{ form.password1 }}
+          <br>
+          {{ form.password2 }}
+          <p class="formerrors">{{ form.password2.errors | safe }}</p>
 
-        <button class="btn" id="logforms" type="submit">Valider</button>
-      </form>
+          <button class="btn" id="logforms" type="submit">Valider</button>
+        </form>
+      </div>
     </div>
   </section>
 

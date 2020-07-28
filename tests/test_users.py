@@ -43,7 +43,7 @@ class SeleniumTests(LiveServerTestCase):
         password1.send_keys('robert1234')
         password2.send_keys('robert1234')
         submit.click()
-        self.assertEqual(self.selenium.current_url, self.live_server_url + '/')
+        self.assertEqual(self.selenium.current_url, self.live_server_url + '/users/signup')
 
     def test_signup_wrong_email(self):
         self.selenium.get(self.live_server_url + '/users/signup')
@@ -163,6 +163,9 @@ class TestViewsUsers(TestCase):
         self.user.set_password('1234')
         self.user.save()
         self.data = {'email': 'arthurH@gmail.com', 'password': '1234'}
+
+    def test_signup_activation_if_email_exists(self):
+        pass
 
     def test_registration_returns_200(self):
         response = self.client.get(reverse('signup'))

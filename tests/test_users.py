@@ -1,18 +1,71 @@
+from django.contrib.auth import login
+from django.test import LiveServerTestCase, TestCase
 from selenium import webdriver
-from django.test import LiveServerTestCase
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-from django.test import TestCase
 from django.urls import reverse
+from django.core import mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
+from users.tokens import account_activation_token
+
 from users.forms import RegistrationForm, LoginForm
 from users.models import User
+
+from products.models import ProductDb, CategoryDb
+from comments.models import CommentsDb
 
 #chrome_options = webdriver.ChromeOptions()
 #chrome_options.headless = True
 
 
-class SeleniumTests(LiveServerTestCase):
+class TestEmail(TestCase):
+    def setUp(self):
+        self.first_name = 'James'
+        self.last_name = 'Bond'
+        self.email = 'jbond@gmail.com'
+        self.password = '1234'
+
+        User.objects.create(first_name=self.first_name, last_name=self.last_name, email=self.email, password=self.password)
+
+    def test_send_email(self):
+        # send message
+        mail.send_mail(
+            'subject here', 'here is the message.',
+            'from@example.com', ['to@example.com'],
+            fail_silently=False
+        )
+        # test that one message has been sent
+        self.assertEqual(len(mail.outbox), 1)
+        # verify that the subject of the message is correct
+        self.assertEqual(mail.outbox[0].subject, 'subject here')
+        # lien sur lequel l'utilisateur clique et que je peux récupérer dans test activate ?
+        #self.assertEqual
+
+    def test_activate_registration(self):
+        user = User.objects.create_user(first_name='James', last_name='Bond', email='jbond@gmail.com', password='1234')
+        user.is_active = False
+        user.save()
+        uid = force_text(urlsafe_base64_decode(self.uidb64))
+        user = User.objects.get(pk=uid)
+        account_activation_token.make_token(user)
+        account_activation_token.check_token(user, self.token)
+        #user.is_active = True
+        #user.save()
+        login(self.request, user)
+        self.assertTrue(user.is_active)
+
+
+    """def test_no_activation_without_link_confirmed(self):
+        number_of_users = User.objects.count()
+        user = User.objects.create_user(email='jbond@gmail.com', password='jbond1234')
+        user.is_active = False
+        new_number_of_users = User.objects.count()
+        self.assertEqual(number_of_users, new_number_of_users)"""
+
+
+class TestsSelenium(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

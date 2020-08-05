@@ -2,8 +2,8 @@ import requests
 from django.core.exceptions import ObjectDoesNotExist
 from products.models import CategoryDb, ProductDb
 
-"""
-class ProductSelector:
+
+"""class ProductSelector:
 
     def __init__(self):
         self.url = 'https://fr.openfoodfacts.org/cgi/search.pl'
@@ -25,13 +25,13 @@ class ProductSelector:
             'nutriment_value_3': 0,
             'sort_b': 'unique_scans_n',
             'json': 1,
-            'page_size': 1000,
+            'page_size': 50,
             'action': 'process',
             'page': 1,
             'fields': 'product_name,url,image_front_url,nutrition_grades,barcode,nutriments'
         }
 
-    def pre_select_products_in_2_main_cats(self):
+    def select_products(self):
 
         #self.params['tag_0'] = category
         response = requests.get(self.url, params=self.params)
@@ -58,8 +58,8 @@ class ProductSelector:
                                  sugar=product['nutriments']['sugars'], salt=product['nutriments']['salt'])
 
 
-selector = ProductSelector()
-"""
+selector = ProductSelector()"""
+
 ####################################################################
 """   SCRIPT TO INITIALIZE THE DB THROUGH OPEN FOOD FACTS' API   """
 ####################################################################

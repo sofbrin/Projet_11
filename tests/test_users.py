@@ -20,7 +20,7 @@ from comments.models import CommentsDb
 #chrome_options.headless = True
 
 
-class TestEmail(TestCase):
+"""class TestEmail(TestCase):
     def setUp(self):
         self.first_name = 'James'
         self.last_name = 'Bond'
@@ -53,11 +53,12 @@ class TestEmail(TestCase):
         account_activation_token.check_token(user, self.token)
         #user.is_active = True
         #user.save()
-        login(self.request, user)
+        #contacter l'url avec self client .get
+
         self.assertTrue(user.is_active)
 
 
-    """def test_no_activation_without_link_confirmed(self):
+    def test_no_activation_without_link_confirmed(self):
         number_of_users = User.objects.count()
         user = User.objects.create_user(email='jbond@gmail.com', password='jbond1234')
         user.is_active = False
@@ -65,7 +66,7 @@ class TestEmail(TestCase):
         self.assertEqual(number_of_users, new_number_of_users)"""
 
 
-class TestsSelenium(LiveServerTestCase):
+"""class TestsSelenium(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -206,7 +207,7 @@ class TestFormsUsers(TestCase):
     def test_logForm_is_valid(self):
         data = self.data2
         form = LoginForm(data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid())"""
 
 
 class TestViewsUsers(TestCase):
@@ -215,24 +216,36 @@ class TestViewsUsers(TestCase):
         self.user = User.objects.create(first_name='Arthur', last_name='H', email='arthurH@gmail.com')
         self.user.set_password('1234')
         self.user.save()
-        self.data = {'email': 'arthurH@gmail.com', 'password': '1234'}
-
-    def test_signup_activation_if_email_exists(self):
-        pass
+        self.token = account_activation_token.make_token(self.user)
+        self.data1 = {'first_name': 'Thomas', 'last_name': 'Dutronc', 'email': 'thomasH@gmail.com',
+                      'password1': '1234', 'password2': '1234'}
+        self.data2 = {'email': 'arthurH@gmail.com', 'password': '1234'}
+        self.data3 = {'uid': 'force_text(urlsafe_base64_encode(uidb64))'}
 
     def test_registration_returns_200(self):
         response = self.client.get(reverse('signup'))
         self.assertEqual(response.status_code, 200)
 
     def test_registration_post(self):
-        response = self.client.post(reverse('signup'))
-        checked_user = User.objects.first()
+        data = self.data1
+        response = self.client.post(reverse('signup'), data, follow=True)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Activez votre compte PurBeurre')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(checked_user.first_name, self.user.first_name)
 
-    def test_login_ok(self):
+    def test_activate(self):
+        user = self.user
+        user.is_active = False
+        user.save()
+        data = self.data3
+        response = self.client.get('home', data)
+        account_activation_token.check_token(self.user, self.token)
+        self.assertTrue(user.is_active)
+        self.assertEqual(response.status_code, 302)
+
+    """def test_login_ok(self):
         self.client.logout()
-        data = self.data
+        data = self.data2
         response = self.client.post(reverse('login'), data, follow=True)
         self.assertRedirects(response, reverse('home'), status_code=302, target_status_code=200)
 
@@ -250,4 +263,4 @@ class TestViewsUsers(TestCase):
     def test_account_without_login(self):
         self.client.logout()
         response = self.client.get(reverse('account'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)"""

@@ -147,5 +147,4 @@ class LegalNoticeTest(SimpleTestCase):
     def test_legal_notice_returns_200(self):
         response = self.client.get(reverse('legal_notice'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'products/legal_notice.html')
-"""
+        self.assertTemplateUsed(response, 'products/legal_notice.html')"""

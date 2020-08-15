@@ -1,16 +1,14 @@
 import requests
-from django.core.exceptions import ObjectDoesNotExist
-from products.models import CategoryDb, ProductDb
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from products.models import ProductDb, CategoryDb
 
 
-"""class ProductSelector:
-
+class ProductSelector:
     def __init__(self):
         self.url = 'https://fr.openfoodfacts.org/cgi/search.pl'
         self.params = {
-            'tagtype_0': 'categories',
-            'tag_contains_0': 'contains',
-            'tag_0': 'category',
+            'lc': 'fr',
+            'cc': 'fr',
             'nutriment_0': 'fat',
             'nutriment_compare_0': 'gte',
             'nutriment_value_O': 0,
@@ -25,37 +23,101 @@ from products.models import CategoryDb, ProductDb
             'nutriment_value_3': 0,
             'sort_b': 'unique_scans_n',
             'json': 1,
-            'page_size': 50,
+            'page_size': 1000,
             'action': 'process',
             'page': 1,
-            'fields': 'product_name,url,image_front_url,nutrition_grades,barcode,nutriments'
+            'fields': 'product_name,url,categories,image_front_url,nutrition_grades,code,nutriments'
         }
 
     def select_products(self):
-
-        #self.params['tag_0'] = category
         response = requests.get(self.url, params=self.params)
         data = response.json()
-        selected_categories = data['tags'][:2]
-        selected_products = selected_categories['products']
+        selected_products = data['products']
+
+        for product in selected_products:
+            if 'product_name' not in product or product['product_name'] == '' \
+                    or 'image_front_url' not in product or product['image_front_url'] == ''\
+                    or 'nutrition_grades' not in product or product['nutrition_grades'] == '' \
+                    or 'code' not in product or product['code'] == '' \
+                    or len(product['categories']) <= 3:
+                continue
+            else:
+                self._save_in_db(product)
+
+    def _save_in_db(self, product):
+        product_name = product['product_name'].lower()
+
+        try:
+            ProductDb.objects.get(name=product_name)
+        except ObjectDoesNotExist:
+            try:
+                p = ProductDb.objects.create(name=product_name, url=product['url'],
+                                             image=product['image_front_url'], nutriscore=product['nutrition_grades'],
+                                             barcode=product['code'], fat=product['nutriments']['fat'],
+                                             saturated_fat=product['nutriments']['saturated-fat'],
+                                             sugar=product['nutriments']['sugars'], salt=product['nutriments']['salt'])
+
+                prod_categories = product['categories'].split(',')
+                for prod_category in prod_categories:
+                    category = CategoryDb.objects.get_or_create(name=prod_category)[0]
+                    #print(category.id, category.name, category.url)
+                    p.categories.add(category.id)
+
+            except (ValidationError, AttributeError):
+                pass
+
+
+"""class ProductSelector:
+
+    def __init__(self):
+        self.url = 'https://fr.openfoodfacts.org/cgi/search.pl'
+        self.params = {
+            'nutriment_0': 'fat',
+            'nutriment_compare_0': 'gte',
+            'nutriment_value_O': 0,
+            'nutriment_1': 'saturated-fat',
+            'nutriment_compare_1': 'gte',
+            'nutriment_value_0': 0,
+            'nutriment_2': 'sugars',
+            'nutriment_compare_2': 'gte',
+            'nutriment_value_2': 0,
+            'nutriment_3': 'salt',
+            'nutriment_compare_3': 'gte',
+            'nutriment_value_3': 0,
+            'sort_b': 'unique_scans_n',
+            'json': 1,
+            'page_size': 1000,
+            'action': 'process',
+            'page': 1,
+            'fields': 'product_name,url,categories,image_front_url,nutrition_grades,code,nutriments'
+        }
+
+    def select_products(self):
+        response = requests.get(self.url, params=self.params)
+        data = response.json()
+        selected_products = data['products']
         selection = []
 
         for product in selected_products:
-            if 'product_name' not in product or product['product_name'] == '' or product['image_front_url'] == ''\
-                    or product['nutrition_grades'] == '' or product['barcode'] == '' or product['categories'] <= 3:
+            if 'product_name' not in product or product['product_name'] == '' \
+                    or 'image_front_url' not in product or product['image_front_url'] == ''\
+                    or 'nutrition_grades' not in product or product['nutrition_grades'] == '' \
+                    or 'code' not in product or product['code'] == '' \
+                    or 'categories' not in product or len(product['categories']) <= 3:
                 continue
             else:
                 selection.append(product)
-                print(selection[product]['categories'])
-                #self._save_in_db(product)
-
+                self._save_in_db(product)
 
     def _save_in_db(self, product):
-        ProductDb.objects.create(name=product['product_name'], url=product['url'], category=product['category'],
-                                 image=product['image_front_url'], nutriscore=product['nutrition_grades'],
-                                 barcode=product['barcode'], fat=product['nutriments']['fat'],
-                                 saturated_fat=product['nutriments']['saturated-fat'],
-                                 sugar=product['nutriments']['sugars'], salt=product['nutriments']['salt'])
+        try:
+            ProductDb.objects.get(name=product['product_name'])
+        except ObjectDoesNotExist:
+            ProductDb.objects.create(name=product['product_name'], url=product['url'], categories=product['categories'],
+                                     image=product['image_front_url'], nutriscore=product['nutrition_grades'],
+                                     barcode=product['code'], fat=product['nutriments']['fat'],
+                                     saturated_fat=product['nutriments']['saturated-fat'],
+                                     sugar=product['nutriments']['sugars'], salt=product['nutriments']['salt'])
 
 
 selector = ProductSelector()"""
@@ -65,8 +127,8 @@ selector = ProductSelector()"""
 ####################################################################
 
 
-def select_categories(limit_cat):
-    """ Selecting the categories according the number entered by the user (management command: populatedb.py) """
+"""def select_categories(limit_cat):
+    Selecting the categories according the number entered by the user (management command: populatedb.py) 
     if CategoryDb.objects.all().count() != 0:
         return
 
@@ -82,7 +144,7 @@ def select_categories(limit_cat):
 
 
 def select_products(category):
-    """ Selecting 20 products per categories according to criteria defined in params and creating the db """
+    Selecting 20 products per categories according to criteria defined in params and creating the db
     selected_prod = []
     page = 1
 
@@ -133,4 +195,4 @@ def select_products(category):
                                              sugar=product['nutriments']['sugars'], salt=product['nutriments']['salt'])
                 if len(selected_prod) == 20:
                     break
-        page += 1
+        page += 1"""

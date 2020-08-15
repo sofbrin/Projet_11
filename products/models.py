@@ -16,8 +16,9 @@ class CategoryManager(models.Manager):
 
 
 class CategoryDb(BaseModel):
-    name = models.CharField(max_length=255)
-    url = models.URLField(max_length=255)
+    name = models.CharField(max_length=500)
+    url = models.URLField(max_length=500)
+    product_count = models.IntegerField(default=0)
 
     objects = CategoryManager()
 
@@ -39,11 +40,12 @@ class ProductDb(BaseModel):
     url = models.URLField(max_length=255)
     image = models.URLField(max_length=255)
     nutriscore = models.CharField(max_length=255)
+    barcode = models.CharField(max_length=255)
     fat = models.FloatField()
     saturated_fat = models.FloatField()
     sugar = models.FloatField()
     salt = models.FloatField()
-    category = models.ForeignKey(CategoryDb, on_delete=models.CASCADE)
+    categories = models.ManyToManyField(CategoryDb, blank=True)
 
     objects = ProductManager()
 

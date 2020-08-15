@@ -1,8 +1,16 @@
 from django.core.management.base import BaseCommand
-from products.dbbuilder import *
+from products.dbbuilder import ProductSelector
 
 
 class Command(BaseCommand):
+    help = "populatedb from API OFF"
+
+    def handle(self, *args, **kwargs):
+        selector = ProductSelector()
+        selector.select_products()
+
+
+"""class Command(BaseCommand):
     help = "create the database with categories and products by entering a number between 5 & 20"
 
     def add_arguments(self, parser):
@@ -12,4 +20,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print(options['nb_categories'])
-        select_categories(options['nb_categories'])
+        select_categories(options['nb_categories'])"""

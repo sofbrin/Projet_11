@@ -22,7 +22,7 @@ def autocompleteModel(request):
         search_qs = ProductDb.objects.filter(name__istartswith=q).order_by('name')[:20]
         results = []
         for p in search_qs:
-            results.append(p.name)
+            results.append(p.name.capitalize())
         data = json.dumps(results)
     else:
         data = 'fail'
@@ -50,10 +50,17 @@ def results(request):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     elif len(query) > 2:
+        substitutes_list = []
         try:
             product = ProductDb.objects.filter(name__icontains=query).order_by('name').first()
-            substitutes_list = ProductDb.objects.filter(category=product.category, nutriscore__lt=product.nutriscore)\
-                .order_by('nutriscore').distinct()
+            product_cats = product.categories.all()
+            nutriscore_selection = ProductDb.objects.filter(nutriscore__lt=product.nutriscore).order_by('nutriscore')
+            for substitute in nutriscore_selection:
+                s_cats = substitute.categories.all()
+                substitute_cats = product_cats.intersection(s_cats)
+                if len(substitute_cats) >= 3:
+                    substitutes_list.append(substitute)
+
             user_substitutes = []
             if request.user.is_authenticated:
                 user_substitutes = UserPersonalDb.objects.filter(user=request.user).values_list('replaced_product__id',

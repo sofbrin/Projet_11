@@ -13,6 +13,8 @@ from django.views.decorators.http import require_http_methods
 from .models import ProductDb, UserPersonalDb
 from comments.models import CommentsDb
 from comments.forms import CommentsForm, DivErrorList
+from pending_favorites.helpers import redirect_to_login
+from pending_favorites.cart import FavoriteCart
 
 
 def autocompleteModel(request):
@@ -46,16 +48,24 @@ def results(request):
         page_number = request.GET.get('page', 1)
 
     if query == '':
-        messages.error(request, 'Vous n\'avez saisi aucun produit', extra_tags='toaster')
+        messages.error(
+            request, 'Vous n\'avez saisi aucun produit', extra_tags='toaster'
+        )
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     elif len(query) > 2:
         substitutes_list = []
         try:
-            product = ProductDb.objects.filter(name__icontains=query).order_by('name').first()
+            product = (
+                ProductDb.objects.filter(name__icontains=query)
+                .order_by('name')
+                .first()
+            )
             product_cats = product.categories.all()
+
             nutriscore_selection = ProductDb.objects.filter(nutriscore__lt=product.nutriscore).order_by('nutriscore')
             first_substitute_cats = []
+
             for substitute in nutriscore_selection:
                 s_cats = substitute.categories.all()
                 first_substitute_cats = product_cats.intersection(s_cats)
@@ -72,8 +82,9 @@ def results(request):
 
             user_substitutes = []
             if request.user.is_authenticated:
-                user_substitutes = UserPersonalDb.objects.filter(user=request.user).values_list('replaced_product__id',
-                                                                                                flat=True)
+                user_substitutes = UserPersonalDb.objects.filter(
+                    user=request.user
+                ).values_list('replaced_product__id', flat=True)
 
             paginator = Paginator(substitutes_list, 6)
 
@@ -91,14 +102,21 @@ def results(request):
             }
             return render(request, 'products/results.html', context)
         except AttributeError:
-            messages.error(request, 'Produit inconnu, faites une autre recherche', extra_tags='toaster')
+            messages.error(
+                request,
+                'Produit inconnu, faites une autre recherche',
+                extra_tags='toaster',
+            )
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
-        messages.error(request, 'Produit inconnu, faites une autre recherche', extra_tags='toaster')
+        messages.error(
+            request,
+            'Produit inconnu, faites une autre recherche',
+            extra_tags='toaster',
+        )
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@login_required
 @require_http_methods(['POST'])
 def save_in_db(request):
     """ Saving product in user personal db with AJAX """
@@ -110,21 +128,34 @@ def save_in_db(request):
     product_id = body['product_id']
     substitute_id = body['substitute_id']
 
+    if not request.user.is_authenticated:
+        cart = FavoriteCart(request)
+        cart.add(
+            {
+                "original_product": product_id,
+                "replaced_product": substitute_id,
+                "user": "user",
+            }
+        )
+        return redirect_to_login(request, 'save_in_db')
+
     original_product = ProductDb.objects.get(pk=product_id)
     replaced_product = ProductDb.objects.get(pk=substitute_id)
 
     try:
-        UserPersonalDb.objects.get(original_product=original_product, replaced_product=replaced_product,
-                                   user=request.user)
-        data = {
-            'is_in_db': True
-        }
+        UserPersonalDb.objects.get(
+            original_product=original_product,
+            replaced_product=replaced_product,
+            user=request.user,
+        )
+        data = {'is_in_db': True}
     except ObjectDoesNotExist:
-        UserPersonalDb.objects.create(original_product=original_product, replaced_product=replaced_product,
-                                      user=request.user)
-        data = {
-            'is_created': True
-        }
+        UserPersonalDb.objects.create(
+            original_product=original_product,
+            replaced_product=replaced_product,
+            user=request.user,
+        )
+        data = {'is_created': True}
 
     return JsonResponse(data)
 
@@ -132,7 +163,11 @@ def save_in_db(request):
 def my_substitutes(request):
     """ Rendering the user personal db """
     if not request.user.is_authenticated:
-        messages.error(request, 'Vous devez vous connecter pour accéder à votre espace', extra_tags='toaster')
+        messages.error(
+            request,
+            'Vous devez vous connecter pour accéder à votre espace',
+            extra_tags='toaster',
+        )
         return HttpResponseRedirect(reverse('login'))
 
     substitutes_list = UserPersonalDb.objects.filter(user=request.user)
@@ -147,8 +182,8 @@ def my_substitutes(request):
     except EmptyPage:
         substitutes = paginator.page(paginator.num_pages)
     context = {
-            'substitutes': substitutes,
-            'paginate': True,
+        'substitutes': substitutes,
+        'paginate': True,
     }
     return render(request, 'products/my_substitutes.html', context)
 
@@ -180,7 +215,7 @@ def detail(request, product_id):
         'product_url': product.url,
         'approved_comments': approved_comments,
         'new_comment': new_comment,
-        'form': form
+        'form': form,
     }
 
     return render(request, 'products/product.html', context)

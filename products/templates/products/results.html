@@ -30,12 +30,7 @@
         <h1 class="text-center mt-0">Il n'y a pas de produit avec un meilleur indice. Faites une autre recherche</h1>
       {% else %}
         <h1 class="text-center mt-0">Vous pouvez remplacer ce produit par les produits suivants</h1>
-          {% if user.is_authenticated %}
-            <h4 class="text-center mt-0">Regardez ses caractéristiques ou enregistrez-le dans votre espace</h4>
-          {% else %}
-            <h4 class="text-center mt-0">Vous devez avoir un compte et être connecté pour pouvoir sauvegarder
-              un produit</h4>
-          {% endif %}
+          <h4 class="text-center mt-0">Regardez ses caractéristiques ou enregistrez-le dans votre espace</h4>
       {% endif %}
 
 
@@ -68,16 +63,14 @@
               <h6><strong>{{ substitute.name }}</strong></h6>
                 <a href="{% url 'product' product_id=substitute.id %}">Fiche produit</a>
 
-                {% if user.is_authenticated %}
-                    <button class="btn btn-outline-dark btn-save" data-subid="{{ substitute.id }}"
-                            data-prodid="{{ product.id }}" data-token="{{ csrf_token }}">
-                      {% if substitute.id in user_substitutions %}
-                        <i class="fas fa-save btn-outline-secondary"><span> Sauvegarder</span></i>
-                      {% else %}
-                        <i class="fas fa-save"><span> Sauvegarder </span></i>
-                      {% endif %}
-                    </button>
-                {% endif %}
+                <button class="btn btn-outline-dark btn-save" data-subid="{{ substitute.id }}"
+                        data-prodid="{{ product.id }}" data-token="{{ csrf_token }}">
+                  {% if substitute.id in user_substitutions %}
+                    <i class="fas fa-save btn-outline-secondary"><span> Sauvegarder</span></i>
+                  {% else %}
+                    <i class="fas fa-save"><span> Sauvegarder </span></i>
+                  {% endif %}
+                </button>
             </div>
           </div>
         </div>

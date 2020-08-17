@@ -15,7 +15,7 @@ import environ
 
 env = environ.Env()
 environ.Env.read_env()
-#from datetime import timedelta
+# from datetime import timedelta
 """import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk import capture_message
@@ -35,7 +35,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'o=z8_es@ivafc5kw+qh(2k@2zsz&x6ti-sszdi1cf5tkk!hmm')
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 'o=z8_es@ivafc5kw+qh(2k@2zsz&x6ti-sszdi1cf5tkk!hmm'
+)
 #
 ALLOWED_HOSTS = []
 DEBUG = True
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'comments.apps.CommentsConfig',
+    'prending_favorites.apps.PendingFavoritesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -152,3 +155,6 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+FAVORITE_MODEL = "products.UserPersonalDb"
+FAVORITED_MODEL = "products.ProductDb"

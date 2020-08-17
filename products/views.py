@@ -19,7 +19,7 @@ def autocompleteModel(request):
     """ Autocompletion in searchBar """
     if request.is_ajax():
         q = request.GET.get('term', '')
-        search_qs = ProductDb.objects.filter(name__istartswith=q).order_by('name')[:20]
+        search_qs = ProductDb.objects.filter(name__istartswith=q).order_by('name')
         results = []
         for p in search_qs:
             results.append(p.name.capitalize())
@@ -55,11 +55,20 @@ def results(request):
             product = ProductDb.objects.filter(name__icontains=query).order_by('name').first()
             product_cats = product.categories.all()
             nutriscore_selection = ProductDb.objects.filter(nutriscore__lt=product.nutriscore).order_by('nutriscore')
+            first_substitute_cats = []
             for substitute in nutriscore_selection:
                 s_cats = substitute.categories.all()
-                substitute_cats = product_cats.intersection(s_cats)
-                if len(substitute_cats) >= 3:
-                    substitutes_list.append(substitute)
+                first_substitute_cats = product_cats.intersection(s_cats)
+
+                if len(product_cats) >= 6:
+                    if len(first_substitute_cats) >= 4:
+                        substitutes_list.append(substitute)
+                else:
+                    if len(first_substitute_cats) >= 3:
+                        substitutes_list.append(substitute)
+            print('TOTO 3', len(first_substitute_cats), first_substitute_cats)
+            print('TOTO 4', len(substitutes_list), substitutes_list)
+            print('TOTO 1', len(product_cats), product_cats)
 
             user_substitutes = []
             if request.user.is_authenticated:

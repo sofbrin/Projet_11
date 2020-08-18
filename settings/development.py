@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'comments.apps.CommentsConfig',
-    'prending_favorites.apps.PendingFavoritesConfig',
+    'pending_favorites.apps.PendingFavoritesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

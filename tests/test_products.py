@@ -15,7 +15,7 @@ from users.models import User
 
 class SeleniumTests(LiveServerTestCase):
     """ Functional tests using the Chrome web browser in headless mode """
-    """@classmethod
+    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.selenium = webdriver.Chrome(ChromeDriverManager().install())
@@ -28,19 +28,9 @@ class SeleniumTests(LiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    def setUp(self):
-        self.user = User.objects.create(first_name='Arthur', last_name='H', email='arthurH@gmail.com')
-        self.user.set_password('1234')
-        self.user.save()
-        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='')
-        self.product = ProductDb.objects.create(id=49, name='nutella', url='', image='', nutriscore='d', fat=0,
-                                                saturated_fat=0, sugar=0, salt=0, category=self.category)
-        self.substitut = ProductDb.objects.create(id=50, name='noisette bio', url='', image='', nutriscore='b', fat=0,
-                                                  saturated_fat=0, sugar=0, salt=0, category=self.category)
-
     def test_link_product_redirects_OFF_detail_product(self):
-        self.selenium.get('http://127.0.0.1:8000/products/product/352/')
-        called_url = 'https://world.openfoodfacts.org/product/3272770003148/pure-goat-chavroux'
+        self.selenium.get('http://127.0.0.1:8000/products/product/686/')
+        called_url = 'https://fr.openfoodfacts.org/produit/3272770003148/chavroux-pur-chevre'
         self.selenium.find_element(By.LINK_TEXT, "Voir la fiche sur le site d'Open Food Facts").click()
         self.assertEqual(self.selenium.current_url, called_url)
 
@@ -51,20 +41,14 @@ class TestViewsProducts(TestCase):
         self.user = User.objects.create(first_name='Arthur', last_name='H', email='arthurH@gmail.com')
         self.user.set_password('1234')
         self.user.save()
-        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='')
-        self.product = ProductDb.objects.create(name='nutella', url='', image='', nutriscore='d', fat=0,
-                                                saturated_fat=0, sugar=0, salt=0, category=self.category)
-        self.substitute1 = ProductDb.objects.create(name='nutella bio', url='', image='', nutriscore='a', fat=0,
-                                                    saturated_fat=0, sugar=0, salt=0, category=self.category)
-        ProductDb.objects.create(name='pâte noisette', url='', image='', nutriscore='b', fat=0, saturated_fat=0,
-                                 sugar=0, salt=0, category=self.category)
-        ProductDb.objects.create(name='pâte choco', url='', image='', nutriscore='e', fat=0, saturated_fat=0,
-                                 sugar=0, salt=0, category=self.category)
-        self.comment = {'text': "j'aime pas le nutella", 'author': '', 'product': ''}
-        self.comment_approved = CommentsDb.objects.create(text='je préfère le nutella bio', date='', author=self.user,
-                                                          product=self.product, approved_comment=True)
-        self.comment_not_approved = CommentsDb.objects.create(text='berkkkk', date='', author=self.user, product=self.product,
-                                                              approved_comment=False)
+        self.product = ProductDb.objects.create(id=49, name='nutella', url='', image='', nutriscore='d', barcode='',
+                                                fat=0, saturated_fat=0, sugar=0, salt=0)
+        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='', product_count=0)
+        self.product.categories.add(self.category)
+        self.substitute1 = ProductDb.objects.create(id=50, name='noisette bio', url='', image='', barcode='',
+                                                  nutriscore='b', fat=0, saturated_fat=0, sugar=0, salt=0)
+        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='', product_count=0)
+        self.substitute1.categories.add(self.category)
 
     def test_product_returns_200(self):
         product_id = self.product.id
@@ -147,4 +131,4 @@ class LegalNoticeTest(SimpleTestCase):
     def test_legal_notice_returns_200(self):
         response = self.client.get(reverse('legal_notice'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'products/legal_notice.html')"""
+        self.assertTemplateUsed(response, 'products/legal_notice.html')

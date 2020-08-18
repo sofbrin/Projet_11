@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from django.test import LiveServerTestCase
 from django.test import TestCase, SimpleTestCase
 from django.urls import reverse
@@ -13,7 +12,7 @@ from users.models import User
 
 class SeleniumTests(LiveServerTestCase):
     """ Functional tests using the Chrome web browser in headless mode """
-    """@classmethod
+    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.selenium = webdriver.Chrome(ChromeDriverManager().install())
@@ -30,11 +29,12 @@ class SeleniumTests(LiveServerTestCase):
         self.user = User.objects.create(first_name='Arthur', last_name='H', email='arthurH@gmail.com')
         self.user.set_password('1234')
         self.user.save()
-        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='')
-        self.product = ProductDb.objects.create(id=49, name='nutella', url='', image='', nutriscore='d', fat=0,
-                                                saturated_fat=0, sugar=0, salt=0, category=self.category)
-        self.substitut = ProductDb.objects.create(id=50, name='noisette bio', url='', image='', nutriscore='b', fat=0,
-                                                  saturated_fat=0, sugar=0, salt=0, category=self.category)
+        self.product = ProductDb.objects.create(id=49, name='nutella', url='', image='', nutriscore='d', barcode='',
+                                                fat=0, saturated_fat=0, sugar=0, salt=0)
+        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='', product_count=0)
+        self.product.categories.add(self.category)
+        self.substitut = ProductDb.objects.create(id=50, name='noisette bio', url='', image='', barcode='',
+                                                  nutriscore='b', fat=0, saturated_fat=0, sugar=0, salt=0)
 
     def test_form_comment_available_if_logged_in(self):
         self.selenium.get(self.live_server_url + '/users/login')
@@ -68,15 +68,14 @@ class TestViewsProducts(TestCase):
         self.user = User.objects.create(first_name='Arthur', last_name='H', email='arthurH@gmail.com')
         self.user.set_password('1234')
         self.user.save()
-        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='')
-        self.product = ProductDb.objects.create(name='nutella', url='', image='', nutriscore='d', fat=0,
-                                                saturated_fat=0, sugar=0, salt=0, category=self.category)
-        self.substitute1 = ProductDb.objects.create(name='nutella bio', url='', image='', nutriscore='a', fat=0,
-                                                    saturated_fat=0, sugar=0, salt=0, category=self.category)
-        ProductDb.objects.create(name='pâte noisette', url='', image='', nutriscore='b', fat=0, saturated_fat=0,
-                                 sugar=0, salt=0, category=self.category)
-        ProductDb.objects.create(name='pâte choco', url='', image='', nutriscore='e', fat=0, saturated_fat=0,
-                                 sugar=0, salt=0, category=self.category)
+        self.product = ProductDb.objects.create(name='nutella', url='', image='', nutriscore='d', barcode='',
+                                                fat=0, saturated_fat=0, sugar=0, salt=0)
+        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='', product_count=0)
+        self.product.categories.add(self.category)
+        self.substitute1 = ProductDb.objects.create(name='nutella bio', url='', image='', nutriscore='a', barcode='',
+                                                    fat=0, saturated_fat=0, sugar=0, salt=0)
+        self.category = CategoryDb.objects.create(name='pâte à tartiner', url='', product_count=0)
+        self.substitute1.categories.add(self.category)
         self.comment = {'text': "j'aime pas le nutella", 'author': '', 'product': ''}
         self.comment_approved = CommentsDb.objects.create(text='je préfère le nutella bio', date='', author=self.user,
                                                           product=self.product, approved_comment=True)
@@ -130,4 +129,4 @@ class TestViewsProducts(TestCase):
         })
         item = CommentsDb.objects.first()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(comment, item.text)"""
+        self.assertEqual(comment, item.text)

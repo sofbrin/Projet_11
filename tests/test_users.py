@@ -13,60 +13,8 @@ from users.tokens import account_activation_token
 from users.forms import RegistrationForm, LoginForm
 from users.models import User
 
-from products.models import ProductDb, CategoryDb
-from comments.models import CommentsDb
 
-#chrome_options = webdriver.ChromeOptions()
-#chrome_options.headless = True
-
-
-"""class TestEmail(TestCase):
-    def setUp(self):
-        self.first_name = 'James'
-        self.last_name = 'Bond'
-        self.email = 'jbond@gmail.com'
-        self.password = '1234'
-
-        User.objects.create(first_name=self.first_name, last_name=self.last_name, email=self.email, password=self.password)
-
-    def test_send_email(self):
-        # send message
-        mail.send_mail(
-            'subject here', 'here is the message.',
-            'from@example.com', ['to@example.com'],
-            fail_silently=False
-        )
-        # test that one message has been sent
-        self.assertEqual(len(mail.outbox), 1)
-        # verify that the subject of the message is correct
-        self.assertEqual(mail.outbox[0].subject, 'subject here')
-        # lien sur lequel l'utilisateur clique et que je peux récupérer dans test activate ?
-        #self.assertEqual
-
-    def test_activate_registration(self):
-        user = User.objects.create_user(first_name='James', last_name='Bond', email='jbond@gmail.com', password='1234')
-        user.is_active = False
-        user.save()
-        uid = force_text(urlsafe_base64_decode(self.uidb64))
-        user = User.objects.get(pk=uid)
-        account_activation_token.make_token(user)
-        account_activation_token.check_token(user, self.token)
-        #user.is_active = True
-        #user.save()
-        #contacter l'url avec self client .get
-
-        self.assertTrue(user.is_active)
-
-
-    def test_no_activation_without_link_confirmed(self):
-        number_of_users = User.objects.count()
-        user = User.objects.create_user(email='jbond@gmail.com', password='jbond1234')
-        user.is_active = False
-        new_number_of_users = User.objects.count()
-        self.assertEqual(number_of_users, new_number_of_users)"""
-
-
-"""class TestsSelenium(LiveServerTestCase):
+class TestsSelenium(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -207,7 +155,7 @@ class TestFormsUsers(TestCase):
     def test_logForm_is_valid(self):
         data = self.data2
         form = LoginForm(data)
-        self.assertTrue(form.is_valid())"""
+        self.assertTrue(form.is_valid())
 
 
 class TestViewsUsers(TestCase):
@@ -220,7 +168,6 @@ class TestViewsUsers(TestCase):
         self.data1 = {'first_name': 'Thomas', 'last_name': 'Dutronc', 'email': 'thomasH@gmail.com',
                       'password1': '1234', 'password2': '1234'}
         self.data2 = {'email': 'arthurH@gmail.com', 'password': '1234'}
-        self.data3 = {'uid': 'force_text(urlsafe_base64_encode(uidb64))'}
 
     def test_registration_returns_200(self):
         response = self.client.get(reverse('signup'))
@@ -237,13 +184,15 @@ class TestViewsUsers(TestCase):
         user = self.user
         user.is_active = False
         user.save()
-        data = self.data3
-        response = self.client.get('home', data)
-        account_activation_token.check_token(self.user, self.token)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = account_activation_token.make_token(user)
+        url = reverse('activate', kwargs={'uidb64': uid, 'token': token})
+        response = self.client.get(url)
+        user.refresh_from_db()
         self.assertTrue(user.is_active)
         self.assertEqual(response.status_code, 302)
 
-    """def test_login_ok(self):
+    def test_login_ok(self):
         self.client.logout()
         data = self.data2
         response = self.client.post(reverse('login'), data, follow=True)
@@ -263,4 +212,4 @@ class TestViewsUsers(TestCase):
     def test_account_without_login(self):
         self.client.logout()
         response = self.client.get(reverse('account'))
-        self.assertEqual(response.status_code, 302)"""
+        self.assertEqual(response.status_code, 302)

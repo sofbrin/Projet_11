@@ -76,9 +76,6 @@ def results(request):
                 else:
                     if len(first_substitute_cats) >= 3:
                         substitutes_list.append(substitute)
-            print('TOTO 3', len(first_substitute_cats), first_substitute_cats)
-            print('TOTO 4', len(substitutes_list), substitutes_list)
-            print('TOTO 1', len(product_cats), product_cats)
 
             user_substitutes = []
             if request.user.is_authenticated:

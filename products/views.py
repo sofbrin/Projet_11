@@ -70,9 +70,14 @@ def results(request):
                 s_cats = substitute.categories.all()
                 first_substitute_cats = product_cats.intersection(s_cats)
 
-                if len(product_cats) >= 6:
+                if len(product_cats) >= 8:
+                    if len(first_substitute_cats) >= 5:
+                        substitutes_list.append(substitute)
+
+                elif len(product_cats) >= 6:
                     if len(first_substitute_cats) >= 4:
                         substitutes_list.append(substitute)
+
                 else:
                     if len(first_substitute_cats) >= 3:
                         substitutes_list.append(substitute)
@@ -134,7 +139,13 @@ def save_in_db(request):
                 "user": "user",
             }
         )
-        return redirect_to_login(request, 'save_in_db')
+
+        """messages.success(
+            request, 'Le produit a été placé dans votre panier, '
+                     'il sera entregistré dans votre espace '
+                     'quand vous vous connecterez.',
+            extra_tags='toaster')"""
+        return redirect_to_login(request, 'my_substitutes')
 
     original_product = ProductDb.objects.get(pk=product_id)
     replaced_product = ProductDb.objects.get(pk=substitute_id)

@@ -1,6 +1,7 @@
 from django.apps import apps as django_apps
 from django.conf import settings
-from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core.exceptions import ImproperlyConfigured
+from django.contrib import messages
 
 
 class FavoriteCart:
@@ -16,16 +17,21 @@ class FavoriteCart:
         cart = self.session.get(self.CART_SESSION_ID)
         if not cart:
             # save an empty cart in the session
-            cart = self.session["favorite_cart"] = []
+            cart = self.session["__favorite_cart__"] = []
         self.cart = cart
 
     def add(self, favorite):
         """Adds a favorite."""
         self.cart.append(favorite)
         self.session.modified = True
+        messages.success(
+            self.request, 'Le produit a été placé dans votre panier, '
+                     'il sera entregistré dans votre espace '
+                     'quand vous vous connecterez.',
+            extra_tags='toaster')
 
     def clear(self):
-        """Removes the cart fromt the session."""
+        """Removes the cart from the session."""
         self.cart.clear()
         self.session.modified = True
 
@@ -35,8 +41,8 @@ class FavoriteCart:
             return
 
         # fetch the favorite and favorited models from the specs in settings
-        favorite_model = self._get_model("favorite")
-        favorited_model = self._get_model("favorited")
+        favorite_model = self._get_model('favorite')
+        favorited_model = self._get_model('favorited')
 
         # Save all pending favorites in database
         for favorite in self.cart:

@@ -57,7 +57,7 @@ def results(request):
         substitutes_list = []
         try:
             product = (
-                ProductDb.objects.filter(name__icontains=query)
+                ProductDb.objects.filter(name__iexact=query)
                 .order_by('name')
                 .first()
             )
@@ -70,11 +70,11 @@ def results(request):
                 s_cats = substitute.categories.all()
                 first_substitute_cats = product_cats.intersection(s_cats)
 
-                if len(product_cats) >= 8:
+                if len(product_cats) >= 7:
                     if len(first_substitute_cats) >= 5:
                         substitutes_list.append(substitute)
 
-                elif len(product_cats) >= 6:
+                elif len(product_cats) >= 5:
                     if len(first_substitute_cats) >= 4:
                         substitutes_list.append(substitute)
 

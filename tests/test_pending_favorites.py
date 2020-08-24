@@ -20,17 +20,18 @@ class TestViewsPendingFavorites(TestCase):
                                                     nutriscore='b', fat=0, saturated_fat=0, sugar=0, salt=0)
         self.category = CategoryDb.objects.create(name='pâte à tartiner', url='', product_count=0)
         self.substitute.categories.add(self.category)
+        #self.cart = {'original_product': self.product.id, 'replaced_product': self.substitute.id, 'user': 'user'}
 
     def test_pending_fav_returns_302(self):
-        request = self.product
-        cart = FavoriteCart(request)
-        cart.add(
-            {
-                "original_product": self.product.id,
-                "replaced_product": self.substitute.id,
-                "user": "user",
-            }
-        )
-        response = self.client.post('save_in_db', cart)
-        self.assertIn(response, self.client.session)
-        self.assertEqual(response.status_code, 302)
+        session = self.client.session
+        original_product = self.product.id
+        replaced_product = self.substitute.id
+        data = {'product_id': original_product, 'substitute_id': replaced_product}
+
+
+        response = self.client.post(reverse('save_in_db'), data)
+        response2 = self.client.post(reverse('save_in_db'), data)
+        # self.assertEqual(response.status_code, 302)
+        self.assertIn(response2, session)
+
+

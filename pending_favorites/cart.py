@@ -1,7 +1,6 @@
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.contrib import messages
 
 
 class FavoriteCart:
@@ -24,11 +23,11 @@ class FavoriteCart:
         """Adds a favorite."""
         self.cart.append(favorite)
         self.session.modified = True
-        messages.success(
+        """messages.success(
             self.request, 'Le produit a été placé dans votre panier, '
                      'il sera entregistré dans votre espace '
                      'quand vous vous connecterez.',
-            extra_tags='toaster')
+            extra_tags='toaster')"""
 
     def clear(self):
         """Removes the cart from the session."""

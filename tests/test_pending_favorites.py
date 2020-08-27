@@ -27,11 +27,11 @@ class TestViewsPendingFavorites(TestCase):
         original_product = self.product.id
         replaced_product = self.substitute.id
         data = {'product_id': original_product, 'substitute_id': replaced_product}
-
+        session.save()
 
         response = self.client.post(reverse('save_in_db'), data)
-        response2 = self.client.post(reverse('save_in_db'), data)
+        #response2 = self.client.post(reverse('save_in_db'), data)
         # self.assertEqual(response.status_code, 302)
-        self.assertIn(response2, session)
+        self.assertIn('nutella', session)
 
 

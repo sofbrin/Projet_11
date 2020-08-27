@@ -64,13 +64,16 @@ def results(request):
             product_cats = product.categories.all()
 
             nutriscore_selection = ProductDb.objects.filter(nutriscore__lt=product.nutriscore).order_by('nutriscore')
-            first_substitute_cats = []
 
             for substitute in nutriscore_selection:
                 s_cats = substitute.categories.all()
                 first_substitute_cats = product_cats.intersection(s_cats)
 
-                if len(product_cats) >= 7:
+                if len(product_cats) >= 8:
+                    if len(first_substitute_cats) >= 6:
+                        substitutes_list.append(substitute)
+
+                elif len(product_cats) >= 7:
                     if len(first_substitute_cats) >= 5:
                         substitutes_list.append(substitute)
 
@@ -140,11 +143,6 @@ def save_in_db(request):
             }
         )
 
-        """messages.success(
-            request, 'Le produit a été placé dans votre panier, '
-                     'il sera entregistré dans votre espace '
-                     'quand vous vous connecterez.',
-            extra_tags='toaster')"""
         return redirect_to_login(request, 'my_substitutes')
 
     original_product = ProductDb.objects.get(pk=product_id)

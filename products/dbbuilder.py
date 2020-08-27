@@ -1,6 +1,7 @@
 import requests
 from django.core.exceptions import ObjectDoesNotExist
 from products.models import ProductDb, CategoryDb
+from string import punctuation
 
 
 def select_products():
@@ -9,8 +10,7 @@ def select_products():
 
     while len(selected_products) <= 5000:
         response = requests.get('https://fr.openfoodfacts.org/cgi/search.pl', params={
-            'lc': 'fr',
-            'cc': 'fr',
+            'lang': 'fr',
             'nutriment_0': 'fat',
             'nutriment_compare_0': 'gte',
             'nutriment_value_O': 0,
@@ -52,7 +52,7 @@ def select_products():
 
 
 def _save_in_db(product):
-    product_name = product['product_name'].lower()
+    product_name = clear_strings(product['product_name'])
 
     try:
         ProductDb.objects.get(name=product_name)
@@ -68,6 +68,20 @@ def _save_in_db(product):
             prod_category = prod_category.strip()
             category = CategoryDb.objects.get_or_create(name=prod_category)[0]
             p.categories.add(category.id)
+
+
+def clear_strings(name):
+    product_name = name.lower()
+
+    for character in punctuation:
+        product_name = product_name.replace(character, " ")
+
+    product_name = product_name.strip()
+
+    return product_name
+
+
+
 
 """class ProductSelector:
     def __init__(self):

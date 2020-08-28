@@ -10,7 +10,7 @@ Amélioration du projet 8 : "PurBeurre - Trouvez un produit de substitution à c
 - Refactoring de la base de données avec l'enregistrement de 5000 produits.
 
 ### 3. Bug
-- Ajout par le mentor T. Chappuis de l'application "pending_favorites" incluant un bug à détecter qui empêche son fonctionnement. Cette application permet de sauvegarder des produits dans la session utilisateur sans qu'il soit connecté et de les enregistrer dans son espace automatiquement dès qu'il se connecte.
+- Ajout par le mentor T. Chappuis de l'application "pending_favorites" incluant un bug à détecter qui empêche son fonctionnement. Cette application permet de sauvegarder des produits dans la session utilisateur sans qu'il soit connecté et de le rediriger vers la page de login.
 
 ### 4. Installation des dépendances
 - pip install -r requirements.txt

@@ -16,18 +16,13 @@ class FavoriteCart:
         cart = self.session.get(self.CART_SESSION_ID)
         if not cart:
             # save an empty cart in the session
-            cart = self.session["__favorite_cart__"] = []
+            cart = self.session[self.CART_SESSION_ID] = []
         self.cart = cart
 
     def add(self, favorite):
         """Adds a favorite."""
         self.cart.append(favorite)
         self.session.modified = True
-        """messages.success(
-            self.request, 'Le produit a été placé dans votre panier, '
-                     'il sera entregistré dans votre espace '
-                     'quand vous vous connecterez.',
-            extra_tags='toaster')"""
 
     def clear(self):
         """Removes the cart from the session."""

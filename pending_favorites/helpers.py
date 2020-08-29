@@ -1,13 +1,11 @@
 """Helpers fonctions to make the use of the favoritecart app easier."""
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from django.conf import settings
-from django.shortcuts import resolve_url
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.views import (
-    redirect_to_login as auth_redirect_to_login,
-)
+from django.http import QueryDict, JsonResponse
+from django.shortcuts import resolve_url
 
 
 # adapted from login_required decorator from django.contrib.auth.decorators
@@ -17,18 +15,21 @@ def redirect_to_login(
     redirect_field_name=REDIRECT_FIELD_NAME,
     login_url=None,
 ):
-    """Redirects the user to the login page."""
+    """Build a JsonResponse indicating a redirection to login page.
+    
+    Prepare a json response indicating the js ajax response handler to 
+    redirect to login with next target pointing to favorites.
+    """
     resolved_favorite_url = resolve_url(favorite_url)
     resolved_login_url = resolve_url(login_url or settings.LOGIN_URL)
-    # If the login url is the same scheme and net location then just
-    # use the path as the "next" url.
-    login_scheme, login_netloc = urlparse(resolved_login_url)[:2]
-    favorite_scheme, favorite_netloc = urlparse(resolved_favorite_url)[:2]
-    if (not login_scheme or login_scheme == favorite_scheme) and (
-        not login_netloc or login_netloc == favorite_netloc
-    ):
-        resolved_favorite_url = request.get_full_path()
+    login_url_parts = list(urlparse(resolved_login_url))
 
-    return auth_redirect_to_login(
-        resolved_favorite_url, resolved_login_url, redirect_field_name
-    )
+    if redirect_field_name:
+        querystring = QueryDict(login_url_parts[4], mutable=True)
+        querystring[redirect_field_name] = resolved_favorite_url
+        login_url_parts[4] = querystring.urlencode(safe='/')
+
+    return JsonResponse({
+        "redirect": True,
+        "follow": urlunparse(login_url_parts) 
+    }, status=202)

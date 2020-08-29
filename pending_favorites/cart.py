@@ -16,7 +16,7 @@ class FavoriteCart:
         cart = self.session.get(self.CART_SESSION_ID)
         if not cart:
             # save an empty cart in the session
-            cart = self.session["__favorite_cart__"] = []
+            cart = self.session[self.CART_SESSION_ID] = []
         self.cart = cart
 
     def add(self, favorite):

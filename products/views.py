@@ -140,11 +140,6 @@ def save_in_db(request):
             }
         )
 
-        """messages.success(
-            request, 'Le produit a été placé dans votre panier, '
-                     'il sera entregistré dans votre espace '
-                     'quand vous vous connecterez.',
-            extra_tags='toaster')"""
         return redirect_to_login(request, 'my_substitutes')
 
     original_product = ProductDb.objects.get(pk=product_id)
@@ -165,7 +160,7 @@ def save_in_db(request):
         )
         data = {'is_created': True}
 
-    return JsonResponse(data)
+    return JsonResponse(data, status=201)
 
 
 def my_substitutes(request):

@@ -25,17 +25,5 @@ class TestViewsPendingFavorites(TestCase):
         replaced_product = self.substitute.id
         data = {'product_id': original_product, 'substitute_id': replaced_product}
         response = self.client.post(reverse('save_in_db'), data)
-        # teste qu'il y a bien une redirection
-        self.assertEqual(response.status_code, 302)
-        # teste que la redirection renvoie sur l'url login
-        self.assertIn(reverse('login'), response['Location'])
-        # teste qu'il y a bien un nouvel élément dans la session enregistré sous la clé "fav cart"
+        self.assertEqual(response.status_code, 202)
         self.assertIn('__favorite_cart__', self.client.session)
-        # teste que le dico contenu dans cet éément contient bien original product = product id
-        self.assertEqual(data['product_id'], self.client.session['__favorite_cart__']['original_product'])
-        # id pour substitute et replaced_ product
-        self.assertEqual(data['substitute_id'], self.client.session['__favorite_cart__']['replaced_product'])
-
-
-
-

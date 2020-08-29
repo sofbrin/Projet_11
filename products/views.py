@@ -163,7 +163,7 @@ def save_in_db(request):
         )
         data = {'is_created': True}
 
-    return JsonResponse(data)
+    return JsonResponse(data, status=201)
 
 
 def my_substitutes(request):

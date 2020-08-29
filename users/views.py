@@ -61,7 +61,7 @@ def activate(request, uidb64, token):
 
 
 def login_view(request):
-    """ Rendering the connexion form"""
+    """ Rendering the connexion form """
     if request.method == 'POST':
         form = LoginForm(request.POST, error_class=DivErrorList)
         if form.is_valid():
@@ -72,7 +72,11 @@ def login_view(request):
                 if user.is_active:
                     login(request, user)
                     messages.success(request, 'Vous êtes connecté', extra_tags='toaster')
-                    return HttpResponseRedirect(reverse('home'))
+                    url = request.GET.get('next')
+                    if not url:
+                        #url = reverse(url)
+                        return HttpResponseRedirect(reverse('home'))
+                    return HttpResponseRedirect(url)
                 else:
                     messages.add_message(request, messages.ERROR, "Compte désactivé.")
                     return HttpResponseRedirect(reverse('login'))

@@ -12,7 +12,7 @@ from users.models import User
 
 class SeleniumTests(LiveServerTestCase):
     """ Functional tests using the Chrome web browser in headless mode """
-    """@classmethod
+    @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.selenium = webdriver.Chrome(ChromeDriverManager().install())
@@ -129,4 +129,4 @@ class TestViewsProducts(TestCase):
         })
         item = CommentsDb.objects.first()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(comment, item.text)"""
+        self.assertEqual(comment, item.text)

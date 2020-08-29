@@ -14,7 +14,7 @@ from users.forms import RegistrationForm, LoginForm
 from users.models import User
 
 
-"""class TestsSelenium(LiveServerTestCase):
+class TestsSelenium(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -212,4 +212,4 @@ class TestViewsUsers(TestCase):
     def test_account_without_login(self):
         self.client.logout()
         response = self.client.get(reverse('account'))
-        self.assertEqual(response.status_code, 302)"""
+        self.assertEqual(response.status_code, 302)

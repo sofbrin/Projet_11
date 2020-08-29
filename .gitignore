@@ -5,3 +5,4 @@ __pycache__
 /staticfiles/
 geckodriver.log
 settings/.env
+sqlite3.db

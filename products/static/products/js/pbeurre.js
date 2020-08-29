@@ -29,7 +29,7 @@ $(document).ready(function () {
         success: function(data) {
             console.log(data);
             if (data.redirect) {
-                window.location.href = data.redirect;
+                window.location.href = data.follow;
             }
             else if (data.is_created) {
                 toastr.success(data, "Ce produit a bien été enregistré dans votre espace");

@@ -23,11 +23,6 @@ class FavoriteCart:
         """Adds a favorite."""
         self.cart.append(favorite)
         self.session.modified = True
-        """messages.success(
-            self.request, 'Le produit a été placé dans votre panier, '
-                     'il sera entregistré dans votre espace '
-                     'quand vous vous connecterez.',
-            extra_tags='toaster')"""
 
     def clear(self):
         """Removes the cart from the session."""

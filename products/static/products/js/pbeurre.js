@@ -27,7 +27,11 @@ $(document).ready(function () {
         contentType: 'application/json; charset=utf-8',
 
         success: function(data) {
-            if (data.is_created) {
+            console.log(data);
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            }
+            else if (data.is_created) {
                 toastr.success(data, "Ce produit a bien été enregistré dans votre espace");
             }
             else if (data.is_in_db) {

@@ -74,8 +74,7 @@ def login_view(request):
                     messages.success(request, 'Vous êtes connecté', extra_tags='toaster')
                     url = request.GET.get('next')
                     if not url:
-                        #url = reverse(url)
-                        return HttpResponseRedirect(reverse('home'))
+                        url = reverse('home')
                     return HttpResponseRedirect(url)
                 else:
                     messages.add_message(request, messages.ERROR, "Compte désactivé.")

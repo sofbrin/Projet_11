@@ -29,7 +29,7 @@ class SeleniumTests(LiveServerTestCase):
         super().tearDownClass()
 
     def test_link_product_redirects_OFF_detail_product(self):
-        self.selenium.get('http://127.0.0.1:8000/products/product/32543/')
+        self.selenium.get('http://127.0.0.1:8000/products/product/37558/')
         called_url = 'https://fr.openfoodfacts.org/produit/3272770003148/chavroux-pur-chevre'
         self.selenium.find_element(By.LINK_TEXT, "Voir la fiche sur le site d'Open Food Facts").click()
         self.assertEqual(self.selenium.current_url, called_url)
